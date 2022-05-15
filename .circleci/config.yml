@@ -18,7 +18,7 @@ jobs:
   build:
     environment:
       IMAGE_NAME: "zero-downtime"
-      IMAGE_TAG:  "${CIRCLE_TAG/v/''}"
+      IMAGE_TAG:  "$CIRCLE_SHA1"
     docker:
       - image: cimg/php:8.1.5
     steps:
@@ -26,7 +26,7 @@ jobs:
       - setup_remote_docker:
           version: 20.10.14
       - run:
-          name: "docker build"
+          name: "docker build and publish"
           command: "docker build -t $IMAGE_NAME:latest ."
       - run:
           name: Publish Docker Image to Docker Hub
