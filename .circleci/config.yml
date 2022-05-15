@@ -10,20 +10,32 @@ jobs:
     machine: true
     resource_class: zicodes/zero-downtime
     steps:
-    - run:
-        name: "install helm"
-        command: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
+      - kubernetes/install-kubeconfig:
+          kubeconfig: KUBECONFIG_DATA
+      - run:
+          name: "install helm"
+          command: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
+  build:
+    docker:
+      - image: docker:20.10.16-git
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache py-pip
+            pip install \
+              docker-compose==1.29.2 \
+              awscli==1.20.0
+      - run:
+          name: "docker"
+          command: "docker"
   deploy:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     machine: true
     resource_class: zicodes/zero-downtime
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - kubernetes/install-kubeconfig:
-          kubeconfig: KUBECONFIG_DATA
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
@@ -36,4 +48,5 @@ workflows:
   deploy-app:
     jobs:
       - prepare-tools
+      - build
       - deploy
