@@ -6,6 +6,13 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
+  prepare-tools:
+    machine: true
+    resource_class: zicodes/zero-downtime
+    steps:
+    - run:
+      name: "install helm"
+      command: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
   deploy:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
@@ -21,11 +28,12 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
       - run:
-          name: "kube"
-          command: "cat $HOME/.kube/config"
+          name: "helm"
+          command: "helm"
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   deploy-app:
     jobs:
+      - prepare-tools
       - deploy
