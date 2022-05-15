@@ -17,7 +17,7 @@ jobs:
           command: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
   build:
     environment:
-      IMAGE_NAME: "zero-downtime"
+      IMAGE_NAME: "${DOCKERHUB_USERNAME}/zero-downtime"
     docker:
       - image: cimg/php:8.1.5
     steps:
@@ -25,15 +25,19 @@ jobs:
       - setup_remote_docker:
           version: 20.10.14
       - run:
-          name: "docker build and publish"
+          name: "docker build"
           command: "docker build -t $IMAGE_NAME:latest ."
+      - run:
+          name: "docker list"
+          command: "docker image ls"
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker tag $IMAGE_NAME:latest $IMAGE_NAME:${CIRCLE_SHA1}
+            IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
+            docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
             docker push $IMAGE_NAME:latest
-            docker push $IMAGE_NAME:${CIRCLE_SHA1}
+            docker push $IMAGE_NAME:$IMAGE_TAG
   deploy:
     machine: true
     resource_class: zicodes/zero-downtime
