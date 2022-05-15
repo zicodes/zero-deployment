@@ -16,11 +16,9 @@ jobs:
           name: "install helm"
           command: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
   build:
-    docker:
-      - image: docker:20.10.16-git
     steps:
       - setup_remote_docker:
-          version: 20.10.16
+          version: 20.10.14
       - run:
           name: "docker"
           command: "docker"
