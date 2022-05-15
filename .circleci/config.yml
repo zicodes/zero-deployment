@@ -17,7 +17,7 @@ jobs:
           command: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
   build:
     environment:
-      IMAGE_NAME: "${DOCKERHUB_USERNAME}/zero-downtime"
+      IMAGE_NAME: "zmeister/zero-downtime"
     docker:
       - image: cimg/php:8.1.5
     steps:
