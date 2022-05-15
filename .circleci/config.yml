@@ -16,14 +16,25 @@ jobs:
           name: "install helm"
           command: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
   build:
+    environment:
+      IMAGE_NAME: "zmeister/zero-downtime"
     docker:
       - image: cimg/php:8.1.5
     steps:
+      - checkout
       - setup_remote_docker:
           version: 20.10.14
       - run:
-          name: "docker"
-          command: "docker"
+          name: "docker build"
+          command: "docker build -t $IMAGE_NAME:latest ."
+      - run:
+          name: Publish Docker Image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            IMAGE_TAG=${CIRCLE_TAG/v/''}
+            docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
+            docker push $IMAGE_NAME:latest
+            docker push $IMAGE_NAME:$IMAGE_TAG
   deploy:
     machine: true
     resource_class: zicodes/zero-downtime
@@ -31,9 +42,6 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
       - run:
           name: "helm"
           command: "/usr/local/bin/helm"
