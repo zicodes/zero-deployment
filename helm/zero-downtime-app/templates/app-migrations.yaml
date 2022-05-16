@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "zero-downtime-app.fullname" . }}-{{ .Values.image.tag }}-migrations
+  name: {{ include "zero-downtime-app.fullname" . }}-v{{ .Values.image.tag | replace "." "-" }}-migrations
   labels:
     {{- include "zero-downtime-app.labels" . | nindent 4 }}
   annotations:
