@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "zero-downtime-app.fullname" . }}-{{ .Values.image.tag }}-migrations
+  labels:
+    {{- include "zero-downtime-app.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ include "zero-downtime-app.fullname" . }}-migrations
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        command: ["php",  "/var/www/html/artisan", "migrate", "--force"]
+      restartPolicy: Never
+  backoffLimit: 0
