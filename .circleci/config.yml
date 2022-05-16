@@ -48,14 +48,14 @@ jobs:
       - run:
           name: "helm"
           command: |
-          IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
-          /usr/local/bin/helm upgrade --install \
-          --set image.tag=$IMAGE_NAME:$IMAGE_TAG \
-          --set pgsql.database=$PGSQL_DATABASE \
-          --set pgsql.username=$PGSQL_USERNAME \
-          --set pgsql.password=$PGSQL_PASSWORD \
-          zero-downtime-app \
-          ./helm/zero-downtime-app/
+            IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
+            /usr/local/bin/helm upgrade --install \
+            --set image.tag=$IMAGE_NAME:$IMAGE_TAG \
+            --set pgsql.database=$PGSQL_DATABASE \
+            --set pgsql.username=$PGSQL_USERNAME \
+            --set pgsql.password=$PGSQL_PASSWORD \
+            zero-downtime-app \
+            ./helm/zero-downtime-app/
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
